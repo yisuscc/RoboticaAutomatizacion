@@ -1,0 +1,8 @@
+No se muy bien como debo interpretar la siguiente parte del enunciado: 
+Para salir del estado de emergencia se deberá pulsar el rearme (Rearme). En ese
+momento se deberá llevar el sistema a la posición inicial, es decir, los depósitos vacíos y
+todas las válvulas cerradas. Una vez realizada esta operación el sistema volverá a operar
+con normalidad y se apagará la señal de emergencia.
+ Lo he interpretado de 2 formas:
+- En la versíon 1, tras finalizar una emergencia y el subsecuente rearme, no se vuelve a iniciar el bucle, por lo que es necesario volver a pulsar m( obxerve que al no haberse pulsado P en contador sigue contando) 
+- En la versión 2, tras finalizar una emergencia y el subsecuente rearme, se vuelve inmediatamnete al bucle siempre y cuando no se haya pusado p antes, no es necesario volver a pulsar m)
