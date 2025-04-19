@@ -1,0 +1,21 @@
+set(gca,'View',[40,26]);grid on; 
+l0 = 0.5; 
+l1= 0.8; 
+l2 = 0.6; 
+framesBase= DrawFrame(eye(4),1,0.2); 
+q1Tab =[0:5:90]';
+bTe1 =[eye(3),[]]
+framesEslabon1= DrawFrame(T,1,0.2);
+for i =1:length(q1Tab)
+    q1= q1Tab(i);
+    bRe1 = RotMatrix([q1,0,0]*pi/180);
+    bTe1= [bRe1,[0,0,10]'; 0 0 0 1]; 
+    RedrawFrame(framesEslabon1,bTe1,1,0.2);
+    pause;
+end;
+return;
+e1Re2= RotMatrix([0,0,0]*pi/180);
+e1Te2= [e1Re2,[0.5,0,0]'; 0 0 0 1]; 
+bTe2 = bTe1 * e1Te2; 
+frameseslabon2= DrawFrame(bTe2);
+
