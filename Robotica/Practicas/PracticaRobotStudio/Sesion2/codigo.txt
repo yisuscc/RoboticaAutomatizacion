@@ -1,0 +1,35 @@
+MODULE Module1
+        CONST robtarget pini:=[[600,150,600],[0,0,1,0],[0,0,0,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+
+    PROC main()
+       Senoide pini, 100,40;
+    ENDPROC
+    PROC Senoide(robtarget pInicial, num amplx, num amplY)
+        CONST num nPuntos :=50; 
+        VAR robtarget pVector{nPuntos};
+        VAR robtarget pAux;
+        VAR num xDesp; 
+        VAR num yDesp;
+        !el movimiento en x es posicion inicial en x +2x
+        !regla  3
+        ! rela de 3 en grados
+        !var robtarget pFinal := Offs(pInicial,2*amplx,0,0) ;
+        MoveL pini,v1000,z100,MyTool\WObj:=wobj0;
+        FOR i FROM 1 TO nPuntos DO 
+         xDesp:= (i/nPuntos) * 2*amplx; 
+         yDesp:= Sin ((i/nPuntos)*360)* amplY;
+         pAux:= Offs (pini, xDesp, yDesp , 0);
+!         pVector{i}:= pini;
+!         pVector{i}.trans.x:= xDesp;
+!         pVector{i}.trans.y:= yDesp;
+!         pVector{i}.trans.z:= pini.trans.z;
+        pVector{i}:= pAux;
+        ENDFOR
+        FOR i FROM 1 TO nPuntos DO 
+            MoveL pVector{i},v100,z50,MyTool\WObj:=wobj0;
+        ENDFOR
+        MoveL pInicial,v100,z100,MyTool\WObj:=wobj0;
+        
+        
+    ENDPROC
+ENDMODULE

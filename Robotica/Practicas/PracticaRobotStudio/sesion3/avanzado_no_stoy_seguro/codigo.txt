@@ -1,0 +1,57 @@
+MODULE Module1
+        CONST robtarget pini:=[[600,150,600],[0,0,1,0],[0,0,0,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+
+    PROC main()
+       Senoide pini, 300,150;
+    ENDPROC
+    PROC Senoide(robtarget pInicial, num amplx, num amplY)
+        CONST num nPuntos :=50; 
+        VAR robtarget pVector{nPuntos};
+        VAR robtarget pAux;
+        VAR num xDesp; 
+        VAR num yDesp;
+        VAR orient oriAux;
+        VAR num angleAux; 
+        VAR num angleAuxX; 
+        VAR num angleAuxY; 
+        
+        
+        
+        !el movimiento en x es posicion inicial en x +2x
+        !regla  3
+        ! rela de 3 en grados
+        !var robtarget pFinal := Offs(pInicial,2*amplx,0,0) ;
+        MoveL pini,v1000,z100,MyTool\WObj:=wobj0;
+        FOR i FROM 1 TO nPuntos DO 
+            !si queremos que el punto inicial cuente como parte de los puntos
+            !2 opciones
+            !1) Dentro del primer bucle,una condicion que haga que cuando i valga uno pvector{i} = pini(ideal si hacemos el camino inverso )
+            !2) reducir el número de puntos en 1
+         xDesp:= (i/nPuntos) * 2*amplx; 
+         yDesp:= Sin ((i/nPuntos)*360)* amplY;
+         angleAux := ATan2(xDesp,yDesp); !Checkear con xdesp + trans.x y lo mismo con y
+         
+        ! pAux:= Offs (pini, xDesp, yDesp , 0);
+           !pVector{i}:= pAux;
+        angleAuxX:= EulerZYX(\X,pini.rot);
+        angleAuxY:= EulerZYX(\y,pini.rot);
+         oriAux:= OrientZYX (angleAux,angleAuxY,angleAuxX) ; 
+         pVector{i}:= pini;
+         pVector{i}.rot:= oriAux;
+         pVector{i}.trans.x:= pVector{i}.trans.x + xDesp;
+         pVector{i}.trans.y:= pVector{i}.trans.y + yDesp;
+        
+         
+     
+        ENDFOR
+        FOR i FROM 1 TO nPuntos DO 
+            MoveL pVector{i},v100,z50,MyTool\WObj:=wobj0;
+        ENDFOR
+        MoveL pInicial,v100,z100,MyTool\WObj:=wobj0;
+        
+        
+    ENDPROC
+    PROC Path_10()
+        MoveL pini,v1000,z100,MyTool\WObj:=wobj0;
+    ENDPROC
+ENDMODULE
