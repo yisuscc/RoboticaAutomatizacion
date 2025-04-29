@@ -1,0 +1,18 @@
+MODULE Module1
+        CONST robtarget pOrigenAprox:=[[1500,500,1150],[0,0,1,0],[0,0,0,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+    CONST robtarget pOrigen:=[[1500,500,850],[0,0,1,0],[0,0,0,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+    CONST robtarget pDestinoAprox:=[[1500.000049807,-500.000011712,1150.000037959],[-0.000000035,0.000000015,1,0.000000012],[-1,-1,-1,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+    CONST robtarget pDestino:=[[1500,-500,850],[0,0,1,0],[-1,0,-1,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+
+    PROC main()
+
+        MoveJ pOrigenAprox,v1000,z100,Ventosa\WObj:=wobj0;
+        MoveL pOrigen,v400,fine,Ventosa\WObj:=wobj0;
+        WaitTime 2;
+        MoveL pOrigenAprox,v400,z100,Ventosa\WObj:=wobj0;
+        MoveL pDestinoAprox,v2000,z100,Ventosa\WObj:=wobj0;
+        MoveL pDestino,v400,fine,Ventosa\WObj:=wobj0;
+        WaitTime 2;
+        MoveL pDestinoAprox,v400,fine,Ventosa\WObj:=wobj0;
+    ENDPROC
+ENDMODULE
