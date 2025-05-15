@@ -1,0 +1,56 @@
+MODULE Module1
+    CONST robtarget pBaseTorre1:=[[1500,500,750],[0,0,1,0],[0,0,0,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+    CONST robtarget pBaseTorre2:=[[1500,-500,750],[0,0,1,0],[-1,0,-1,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+    CONST robtarget pReposo:=[[1808.910161514,0,1855],[0.5,0,0.866025404,0],[0,0,0,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+
+    
+    PROC main()
+        VAR robtarget pbt:= pBaseTorre1;
+        SetDO SD_ActivaVentosa, 0;
+        
+       trasladaTorre pbt,100,100,4;
+       SetDO SD_ActivaVentosa, 0;
+       
+    ENDPROC
+    PROC trasladaTorre(robtarget pBaseTorre,num ap, num dp,num np)
+        VAR robtarget pIntermedia:= pBaseTorre;
+        VAR robtarget pDestino:= pBaseTorre;
+        pIntermedia.trans.y:=  pBaseTorre.trans.y - 3*dp;
+        pDestino.trans.y:= pBaseTorre.trans.y + 3*dp;
+        trasladaTorreAux pBaseTorre, pIntermedia,ap, dp,np; 
+        WaitTime 3;
+        trasladaTorreAux pIntermedia,pDestino,ap, dp,np; 
+    ENDPROC
+    PROC trasladaTorreAux(robtarget pBaseOrigen,robTarget pBaseDestino, num ap, num dp,num np)
+        VAR num i;
+        VAR robtarget pBOri;
+        VAR robtarget PBDesti; 
+        FOR i FROM np TO 1 STEP -1 DO
+            pBOri:= pBaseOrigen;
+            pBOri.trans.z:= pBaseOrigen.trans.z + (i-1)*ap;
+            pBDesti:= pBaseDestino;
+            pBDesti.trans.z:= pBaseDestino.trans.z + (i-1)*ap;
+            muevePieza pBOri,pBDesti;
+
+        ENDFOR
+    ENDPROC
+    PROC muevePieza(robtarget pOrigen,robTarget pDestino)
+        VAR robtarget pOrigenAprox := pOrigen;
+        VAR robtarget pDestinoAprox := pDestino;
+        VAR num alturaAprox:= 150; 
+        pOrigenAprox.trans.z := pOrigen.trans.z + alturaAprox;
+        pDestinoAprox.trans.z := pDestino.trans.z + alturaAprox;
+        MoveJ pOrigenAprox,v2000,z100,Ventosa\WObj:=wobj0;
+        MoveL pOrigen,v300,fine,Ventosa\WObj:=wobj0;
+        SetDO SD_ActivaVentosa, 1;! se puede combinar con mode LDO
+        WaitDI ED_PiezaCogida, 1;
+        MoveL pOrigenAprox,v300,z0,Ventosa\WObj:=wobj0;
+        MoveJ pDestinoAprox,v2000,z100,Ventosa\WObj:=wobj0;
+        MoveL pDestino,v300,fine,Ventosa\WObj:=wobj0;
+        SetDO SD_ActivaVentosa, 0;
+        WaitDI ED_PiezaCogida, 0;
+        MoveL pDestinoAprox,v300,z0,Ventosa\WObj:=wobj0;
+    ENDPROC
+    
+        
+ENDMODULE
