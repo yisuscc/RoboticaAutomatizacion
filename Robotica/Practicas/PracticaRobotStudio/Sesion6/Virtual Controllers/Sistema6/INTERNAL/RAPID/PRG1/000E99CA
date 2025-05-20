@@ -1,0 +1,73 @@
+MODULE Module1
+    CONST robtarget pReposo:=[[1808.910161514,0,1855],[0.5,0,0.866025404,0],[0,0,0,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+    CONST robtarget pBasePalePiezasLargas:=[[500,1500,0],[0,1,0,0],[-2,0,-1,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+    CONST robtarget pBasePalePiezasCortas:=[[500,500,0],[0,1,0,0],[-1,0,0,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+    CONST robtarget pBaseCogidaPiezaCorta:=[[500,250,0],[0,0,1,0],[-1,0,-1,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+    CONST robtarget pBaseCogidaPiezaLarga:=[[500,500,0],[0,0,1,0],[-1,0,-1,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+ PROC Inicializa ()
+      MoveJ pReposo, v3000, fine, Ventosa, \WObj:=wobj0;
+      Reset SD_ActivaVentosa;
+      SetDO SD_ActivaSensores, 1;
+      SetDO SD_MueveCinta, 1;
+      Reset SD_PideNuevaPieza;
+      Reset SD_PiezaDisponible;
+   ENDPROC
+
+   PROC Finaliza ()
+      MoveJ pReposo, v3000, fine, Ventosa, \WObj:=wobj0;
+      Reset SD_ActivaVentosa;
+      Reset SD_PideNuevaPieza;
+      Reset SD_MueveCinta;
+      Reset SD_ActivaSensores;
+      Reset SD_ActivaSensores; 
+      Reset SD_PiezaDisponible;
+   ENDPROC
+   
+   PROC Main ()
+      CONST num altoPieza := 30;
+      VAR num nPiezas;
+
+      Inicializa;
+
+      FOR nPiezas FROM 1 TO 20 DO
+         WaitDI ED_SensorFinalCinta, 1;
+         LlevaPiezaAPale nPiezas, altoPieza;
+         SetDO SD_PiezaDisponible, 1;
+         WaitDI ED_PiezaDisponibleAck, 1;
+         Reset SD_PiezaDisponible;
+      ENDFOR
+
+      Finaliza;
+   ENDPROC
+   
+   PROC LlevaPiezaAPale (num nPiezas, num altoPieza)
+      VAR robtarget pCoger;
+      VAR robtarget pSoltar;
+      VAR robtarget pCogerAprox;
+      VAR robtarget pSoltarAprox;
+      VAR num distSeguridad := 300;
+
+      pCoger  := Offs (pBaseCogidaPiezaCorta, 0, 0, altoPieza);
+      pSoltar := Offs (pBasePalePiezasCortas, 0, 0, altoPieza*nPiezas);
+
+      pCogerAprox  := Offs (pCoger,  0, 0, distSeguridad);
+      pSoltarAprox := Offs (pSoltar, 0, 0, distSeguridad);
+
+      MoveJ pCogerAprox, v3000, z100, Ventosa, \WObj:=WO_CintaTransportadora;
+      MoveLDO pCoger, v1000, fine, Ventosa, \WObj:=WO_CintaTransportadora, SD_ActivaVentosa, 1;
+      WaitDI ED_PiezaCogida, 1;
+      MoveL pCogerAprox, v1000, z100, Ventosa, \WObj:=WO_CintaTransportadora;
+      MoveJ pSoltarAprox, v3000, z100, Ventosa, \WObj:=WO_Paletizado;
+      MoveLDO pSoltar, v1000, fine, Ventosa, \WObj:=WO_Paletizado, SD_ActivaVentosa, 0;
+      WaitDI ED_PiezaCogida, 0;
+      MoveL pSoltarAprox, v1000, z100, Ventosa, \WObj:=WO_Paletizado;
+      MoveJ pCogerAprox, v3000, z100, Ventosa, \WObj:=WO_CintaTransportadora;
+   ENDPROC
+    PROC Path_10()
+        MoveL pReposo,v1000,z100,Ventosa\WObj:=wobj0;
+        MoveL pBasePalePiezasLargas,v1000,z100,Ventosa\WObj:=WO_Paletizado;
+        MoveL pBasePalePiezasCortas,v1000,z100,Ventosa\WObj:=WO_Paletizado;
+        MoveL pBaseCogidaPiezaCorta,v1000,z100,Ventosa\WObj:=WO_CintaTransportadora;
+        MoveL pBaseCogidaPiezaLarga,v1000,z100,Ventosa\WObj:=WO_CintaTransportadora;
+    ENDPROC
+ENDMODULE
