@@ -1,0 +1,68 @@
+MODULE Module1
+    CONST robtarget pBaseOrigen:=[[1500,-500,750],[0,0,1,0],[0,0,0,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+    CONST robtarget pCentroDestino:=[[1700,1000,750],[0,0,1,0],[0,0,0,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+    CONST robtarget pReposo:=[[1808.910161514,0,1855],[0.5,0,0.866025404,0],[0,0,0,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+    VAR num altoPieza := 50;         
+    var num nPiezasTorreOrigen := 16;   
+    CONST num nTorresDestino := 4;        
+    var num radioCircunf := 400;
+    VAR robtarget posicionesDestino{nTorresDestino};
+    PROC MAIN()
+        SetDO SD_ActivaVentosa, 0;
+        MoveJ pReposo, v1000,z50,Ventosa;
+        TrasladaTorre pBaseOrigen,pCentroDestino,pReposo,altoPieza,nPiezasTorreOrigen,nTorresDestino,radioCircunf;
+        MoveJ pReposo, v1000,z50,Ventosa;
+        SetDO SD_ActivaVentosa, 0;
+    ENDPROC
+    PROC TrasladaTorre( robtarget pBaseOrigen,robtarget pCentroDestino,robtarget pReposo,num altoPieza,num nPiezasTorreOrigen,num nTorresDestino,num radioCircunf)
+
+        VAR num x;
+        VAR robtarget pOrigen;
+        VAR robtarget pDestino;
+       
+       CalcularPosicionesDestino radioCircunf,nTorresDestino, pCentroDestino;
+       FOR  i FROM 1 TO nPiezasTorreOrigen DO 
+            x := ((i-1)MOD nTorresDestino) +1; 
+            pOrigen:= pBaseOrigen;
+            pOrigen.trans.z := pBaseOrigen.trans.z +((nPiezasTorreOrigen-i+1)*altoPieza);
+            pDestino:= posicionesDestino{x};
+            pDestino.trans.z := pDestino.trans.z +altoPieza;
+            muevePieza pOrigen,pDestino;
+            posicionesDestino{x}:= pDestino;
+       ENDFOR
+    ENDPROC
+    
+        PROC CalcularPosicionesDestino(num radioCircunf,num nTorresDestino,robtarget pCentroDestino)
+        VAR num angulo;
+         VAR robtarget pAux;
+        
+        FOR i FROM 1 TO nTorresDestino DO
+            pAux:= pCentroDestino;
+            angulo := (360 / nTorresDestino) * (i - 1);
+            pAux.trans.x := pCentroDestino.trans.x + radioCircunf * Cos(angulo);
+            pAux.trans.y := pCentroDestino.trans.y + radioCircunf * Sin(angulo);
+            pAux.trans.z:= pCentroDestino.trans.z;
+            posicionesDestino{i} := pAux;
+        ENDFOR
+    ENDPROC
+    
+        PROC muevePieza(robtarget pOrigen,robTarget pDestino)
+            VAR robtarget pOrigenAprox;
+            VAR robtarget pDestinoAprox;
+            VAR num alturaAprox:= 150; 
+            pOrigenAprox := pOrigen;
+             pDestinoAprox := pDestino;
+            pOrigenAprox.trans.z := pOrigen.trans.z + alturaAprox;
+            pDestinoAprox.trans.z := pDestino.trans.z + alturaAprox;
+            MoveJ pOrigenAprox,v2000,z100,Ventosa\WObj:=wobj0;
+            MoveL pOrigen,v300,fine,Ventosa\WObj:=wobj0;
+            SetDO SD_ActivaVentosa, 1;! se puede combinar con mode LDO
+            WaitDI ED_PiezaCogida, 1;
+            MoveL pOrigenAprox,v300,z0,Ventosa\WObj:=wobj0;
+            MoveJ pDestinoAprox,v2000,z100,Ventosa\WObj:=wobj0;
+            MoveL pDestino,v300,fine,Ventosa\WObj:=wobj0;
+            SetDO SD_ActivaVentosa, 0;
+            WaitDI ED_PiezaCogida, 0;
+            MoveL pDestinoAprox,v300,fine,Ventosa\WObj:=wobj0;
+    ENDPROC
+ENDMODULE
